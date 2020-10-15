@@ -81,7 +81,18 @@ public class Devoir {
 
     // This function calculate the potential under the source and the drain
     public void updateDomainUnderSourceAndDrain() {
+        
+        for (int i = 1; i < 16; i++) {
+            //For the left side
+            for (int j = 2; j < 7; j++) {
+                domain[i][j] = (getTop(i, j) + getBottom(i, j) + getLeft(i, j) + getRight(i, j)) / 4;
+            }
 
+            //For the right side
+            for (int j = 19; j < 24; j++) {
+                domain[i][j] = (getTop(i, j) + getBottom(i, j) + getLeft(i, j) + getRight(i, j)) / 4;
+            }
+        }
     }
 
     // This function calculate the potential for the 2 columns after the source and the 2 collumns before the drain
@@ -116,7 +127,9 @@ public class Devoir {
 
     // This function call all other function that implement the algorithm
     public void updateDomain() {
-
+        //first step is to create a deep copy of the current array
+        int[][] oldDomain = deepCopy(domain);
+        updateDomainUnderSourceAndDrain();
     }
 
     // Just to print the current state of the domain
@@ -135,6 +148,10 @@ public class Devoir {
 
     public static void main(String[] args) {
         Devoir dev = new Devoir();
+        for (int i = 0; i < 1000; i++) {
+            dev.updateDomain();
+        }
+        
         dev.printDomain();
     }
 }
