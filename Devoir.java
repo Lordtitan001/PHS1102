@@ -17,8 +17,9 @@ public class Devoir {
     private int G;
     private int O = 0;
     private int Z;
-    // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
-    private double[][] domain = { { F, S, S, S, S, S, S, S, F, F, F, F, G, G, G, F, F, F, F, D, D, D, D, D, D, D, F }, // 0
+    
+    private double[][] domain = {
+            { F, S, S, S, S, S, S, S, F, F, F, F, G, G, G, F, F, F, F, D, D, D, D, D, D, D, F }, // 0
             { F, O, O, O, O, O, O, O, O, Z, Z, Z, Z, Z, Z, Z, Z, Z, O, O, O, O, O, O, O, O, F }, // 1
             { F, O, O, O, O, O, O, O, O, Z, Z, Z, Z, Z, Z, Z, Z, Z, O, O, O, O, O, O, O, O, F }, // 2
             { F, O, O, O, O, O, O, O, O, Z, Z, Z, Z, Z, Z, Z, Z, Z, O, O, O, O, O, O, O, O, F }, // 3
@@ -34,7 +35,8 @@ public class Devoir {
             { F, O, O, O, O, O, O, O, O, Z, Z, Z, Z, Z, Z, Z, Z, Z, O, O, O, O, O, O, O, O, F }, // 13
             { F, O, O, O, O, O, O, O, O, Z, Z, Z, Z, Z, Z, Z, Z, Z, O, O, O, O, O, O, O, O, F }, // 14
             { F, O, O, O, O, O, O, O, O, Z, Z, Z, Z, Z, Z, Z, Z, Z, O, O, O, O, O, O, O, O, F }, // 15
-            { F, F, F, F, F, F, F, F, F, Z, Z, Z, G, G, G, Z, Z, Z, F, F, F, F, F, F, F, F, F } // 16
+            { F, F, F, F, F, F, F, F, F, F, F, F, G, G, G, F, F, F, F, F, F, F, F, F, F, F, F }  // 16
+           // 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
     };
 
     // this function return the cell on top of the actual cell
@@ -239,6 +241,20 @@ public class Devoir {
         return oldDomain;
     }
 
+    public double calculateIntensity() {
+        double[] col12 = new double[5];
+        double[] col13 = new double[5];
+
+        double sumDeltaPotential = 0;
+        for (int i = 0; i < 6; i++) { 
+            double potentialA = (domain[6 + i][13] + domain[7 + i][12]) / 2;
+            double potentialB = (domain[6 + i][14] + domain[7 + i][13]) / 2;
+            sumDeltaPotential += (potentialB - potentialA);
+        }
+
+        return (-1/(0.065* Math.pow(10,-2))*16 * Math.pow(10, -6)) * sumDeltaPotential;
+    }
+
     // Just to print the current state of the domain
     private void printDomain() {
         String domainString = "";
@@ -255,10 +271,9 @@ public class Devoir {
         }
 
         try {
-            File output  = new File("output.txt");
-            if (!output.exists()) {
-                output.mkdir();
-            }
+            File output = new File("potentiels.txt");
+            output.createNewFile();
+            
             PrintWriter printer = new PrintWriter(output);
             printer.write(domainString);
             printer.close();
@@ -274,7 +289,11 @@ public class Devoir {
             if (dev.precisionReached(oldDomain))
                 break;
         }
+        double intensity = dev.calculateIntensity();
+        System.out.println(intensity);
+
+        double resist = 400 / intensity;       
         
-        dev.printDomain();
+        System.out.println(resist);
     }
 }
